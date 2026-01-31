@@ -48,16 +48,19 @@ echo "Modifying shell configs..."
 [[ -f ~/.zshrc ]] && cp ~/.zshrc ~/.zshrc.bak
 [[ -f ~/.config/fish/config.fish ]] && cp ~/.config/fish/config.fish ~/.config/fish/config.fish.bak
 
-# Modify shell configs
-grep -qxF 'if [[ -z "$UWUCAT_WRAPPED" ]]; then export UWUCAT_WRAPPED=1; exec > >(uwucat | lolcat) 2>&1; fi' ~/.bashrc || \
-    echo 'if [[ -z "$UWUCAT_WRAPPED" ]]; then export UWUCAT_WRAPPED=1; exec > >(uwucat | lolcat) 2>&1; fi' >> ~/.bashrc
+# Only wrap interactive shells
+# Bash
+grep -qxF 'if [[ $- == *i* ]] && [[ -z "$UWUCAT_WRAPPED" ]]; then export UWUCAT_WRAPPED=1; exec > >(uwucat | lolcat) 2>&1; fi' ~/.bashrc || \
+    echo 'if [[ $- == *i* ]] && [[ -z "$UWUCAT_WRAPPED" ]]; then export UWUCAT_WRAPPED=1; exec > >(uwucat | lolcat) 2>&1; fi' >> ~/.bashrc
 
-grep -qxF 'if [[ -z "$UWUCAT_WRAPPED" ]]; then export UWUCAT_WRAPPED=1; exec > >(uwucat | lolcat) 2>&1; fi' ~/.zshrc || \
-    echo 'if [[ -z "$UWUCAT_WRAPPED" ]]; then export UWUCAT_WRAPPED=1; exec > >(uwucat | lolcat) 2>&1; fi' >> ~/.zshrc
+# Zsh
+grep -qxF 'if [[ -o interactive ]] && [[ -z "$UWUCAT_WRAPPED" ]]; then export UWUCAT_WRAPPED=1; exec > >(uwucat | lolcat) 2>&1; fi' ~/.zshrc || \
+    echo 'if [[ -o interactive ]] && [[ -z "$UWUCAT_WRAPPED" ]]; then export UWUCAT_WRAPPED=1; exec > >(uwucat | lolcat) 2>&1; fi' >> ~/.zshrc
 
+# Fish
 mkdir -p ~/.config/fish
-grep -qxF 'if not set -q UWUCAT_WRAPPED; set -gx UWUCAT_WRAPPED 1; exec script -q /dev/null | uwucat | lolcat; end' ~/.config/fish/config.fish || \
-    echo 'if not set -q UWUCAT_WRAPPED; set -gx UWUCAT_WRAPPED 1; exec script -q /dev/null | uwucat | lolcat; end' >> ~/.config/fish/config.fish
+grep -qxF 'if status --is-interactive; and not set -q UWUCAT_WRAPPED; set -gx UWUCAT_WRAPPED 1; exec script -q /dev/null | uwucat | lolcat; end' ~/.config/fish/config.fish || \
+    echo 'if status --is-interactive; and not set -q UWUCAT_WRAPPED; set -gx UWUCAT_WRAPPED 1; exec script -q /dev/null | uwucat | lolcat; end' >> ~/.config/fish/config.fish
 
 # Replace fastfetch/neofetch with uwufetch
 echo "Replacing fastfetch and neofetch with uwufetch..."
@@ -66,4 +69,3 @@ sudo cp /bin/uwufetch /bin/fastfetch
 sudo cp /bin/uwufetch /bin/neofetch
 
 echo "Congwats!!! Youw system is a miwwion times bettew!!!! uwu"
-
